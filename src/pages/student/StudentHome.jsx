@@ -115,7 +115,7 @@ function StudentHome() {
 
             {/* ── Disaster Awareness Videos ── */}
             <section className="section my-10">
-                <h2 className="section-title text-xl font-bold mb-4 flex items-center gap-2 dark:text-white"><FiVideo className="text-primary"/> Awareness Videos</h2>
+                <h2 className="section-title text-xl font-bold mb-4 flex items-center gap-2 dark:text-white"><FiVideo className="text-primary" /> Awareness Videos</h2>
                 <div className="video-grid grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="video-wrapper">
                         <iframe
@@ -128,18 +128,22 @@ function StudentHome() {
                     </div>
                     <div className="video-wrapper">
                         <iframe
-                            src="https://www.youtube.com/embed/7K1wkr9dVVs"
-                            title="Flood Safety"
+                            src="https://www.youtube.com/embed/pi_nUPcQz_A?si=WhPqaIwpH2_2Wz8K"
+                            title="YouTube video player"
                             frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerPolicy="strict-origin-when-cross-origin"
                             allowFullScreen
                         />
                         <p>Flood Preparedness Guide</p>
                     </div>
                     <div className="video-wrapper">
                         <iframe
-                            src="https://www.youtube.com/embed/OgpKkKWTe_8"
-                            title="Fire Safety"
+                            src="https://www.youtube.com/embed/Xgc90CoJbDI?si=4HITIblVW1C2aFB9"
+                            title="YouTube video player"
                             frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerPolicy="strict-origin-when-cross-origin"
                             allowFullScreen
                         />
                         <p>Fire Safety & Escape Planning</p>
@@ -149,7 +153,7 @@ function StudentHome() {
 
             {/* ── Available Courses ── */}
             <section className="section my-10">
-                <h2 className="section-title text-xl font-bold mb-4 flex items-center gap-2 dark:text-white"><FiMap className="text-primary"/> Available Courses</h2>
+                <h2 className="section-title text-xl font-bold mb-4 flex items-center gap-2 dark:text-white"><FiMap className="text-primary" /> Available Courses</h2>
                 {loadingCourses ? (
                     <div className="spinner" />
                 ) : courses.length === 0 ? (
@@ -168,7 +172,7 @@ function StudentHome() {
                                 <p className="course-desc text-sm text-slate-500 dark:text-slate-400 mb-4">{course.description || 'No description provided.'}</p>
                                 <p className="course-teacher text-sm flex items-center gap-2 dark:text-slate-300 mb-1"><FiUser /> {course.teacher?.name || 'Unknown'}</p>
                                 <p className="course-lessons text-sm flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-4"><FiBookOpen /> {course.lessons?.length || 0} lessons</p>
-                                
+
                                 {enrolledCourseIds.includes(course._id) ? (
                                     <Link className="btn btn-outline btn-sm" to={`/student/courses/${course._id}`}>
                                         Start Learning
