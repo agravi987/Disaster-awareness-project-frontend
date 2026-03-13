@@ -1,0 +1,83 @@
+/**
+ * src/pages/Auth.css - Shared styles for Login and Register pages
+ */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 40%, #e67e22 100%);
+    padding: 1rem;
+}
+
+.auth-card {
+    background: rgb(var(--surface));
+    color: rgb(var(--text));
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgb(var(--border));
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.auth-logo {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: rgb(var(--text));
+    margin-bottom: 0.15rem;
+}
+
+.auth-header p {
+    font-size: 0.85rem;
+    color: rgb(var(--text-muted));
+}
+
+.auth-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: rgb(var(--text));
+    margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+    color: rgb(var(--text-muted));
+    font-size: 0.867rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+    color: rgb(var(--text-muted));
+}
+
+.auth-link a {
+    color: rgb(var(--primary));
+    font-weight: 600;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,192 @@
+/**
+ * src/pages/student/StudentHome.css - Student Home Page Styles
+ */
+
+.student-home {
+    max-width: 1200px;
+}
+
+.subtitle {
+    color: rgb(var(--text-muted));
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
+
+/* ── Quick Actions ─────────────────────────── */
+.quick-actions {
+    margin-bottom: 2rem;
+}
+
+.quick-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgb(var(--surface));
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s, box-shadow 0.15s;
+    border-left: 4px solid rgb(var(--primary));
+}
+
+.quick-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.quick-icon {
+    font-size: 2rem;
+}
+
+.quick-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.quick-card p {
+    font-size: 0.82rem;
+    color: rgb(var(--text-muted));
+}
+
+/* ── Sections ──────────────────────────────── */
+.section {
+    margin-bottom: 2.5rem;
+}
+
+.section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: rgb(var(--text));
+}
+
+/* ── Videos ────────────────────────────────── */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.video-wrapper {
+    background: rgb(var(--surface));
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.video-wrapper iframe {
+    width: 100%;
+    height: 180px;
+    display: block;
+}
+
+.video-wrapper p {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgb(var(--text));
+}
+
+/* ── Courses ────────────────────────────────── */
+.course-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.course-category {
+    margin-bottom: 0.25rem;
+}
+
+.course-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(var(--text));
+}
+
+.course-desc {
+    font-size: 0.82rem;
+    color: rgb(var(--text-muted));
+    flex: 1;
+}
+
+.course-teacher,
+.course-lessons {
+    font-size: 0.8rem;
+    color: rgb(var(--text-muted));
+}
+
+/* ── News ───────────────────────────────────── */
+.news-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    padding: 0;
+}
+
+.news-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.news-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.news-content {
+    padding: 0.9rem 1rem 1rem;
+}
+
+.news-source {
+    font-size: 0.72rem;
+    color: rgb(var(--primary));
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.news-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0.3rem 0;
+    color: rgb(var(--text));
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-desc {
+    font-size: 0.8rem;
+    color: rgb(var(--text-muted));
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.empty-msg {
+    color: rgb(var(--text-muted));
+    font-size: 0.9rem;
+    padding: 1rem 0;
+}
+
+@media (max-width: 1000px) {
+    .video-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .video-grid,
+    .courses-grid,
+    .news-grid {
+        grid-template-columns: 1fr;
+    }
+}

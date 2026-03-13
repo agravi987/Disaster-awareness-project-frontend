@@ -1,0 +1,156 @@
+/**
+ * src/components/Sidebar.css - Sidebar Styles
+ */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    background: #1a1a2e;
+    color: rgb(var(--text));
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Student sidebar accent */
+.sidebar-student {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+}
+
+/* Teacher sidebar accent */
+.sidebar-teacher {
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 100%);
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 1rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-icon {
+    font-size: 1.8rem;
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.brand-role {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgb(var(--primary));
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.user-info {
+    overflow: hidden;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(var(--text));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-email {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 0.5rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.nav-section-label {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 0.5rem 0.25rem;
+    font-weight: 600;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    transition: background 0.15s, color 0.15s;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.nav-link-active {
+    background: rgb(var(--primary)) !important;
+    color: #fff !important;
+}
+
+.nav-icon {
+    font-size: 1.1rem;
+}
+
+.sidebar-logout {
+    margin: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    border-radius: 8px;
+    text-align: left;
+    font-size: 0.875rem;
+    transition: background 0.15s;
+}
+
+.sidebar-logout:hover {
+    background: rgba(231, 76, 60, 0.25);
+}

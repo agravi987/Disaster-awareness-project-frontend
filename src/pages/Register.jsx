@@ -1,0 +1,138 @@
+/**
+ * src/pages/Register.jsx - Registration Page
+ * 
+ * Presents a form for new users to register.
+ * Users can choose their role (student/teacher).
+ * On success, redirects to the appropriate dashboard.
+ */
+
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { registerUser } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import PasswordInput from '../components/PasswordInput';
+import './Auth.css';
+
+function Register() {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        password: '',
+        role: 'student', // default role
+    });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+            const { data } = await registerUser(form);
+            login(data);
+
+            if (data.role === 'teacher') {
+                navigate('/teacher');
+            } else {
+                navigate('/student');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="auth-page">
+            <div className="auth-card">
+                <div className="auth-header">
+                    <div className="auth-logo">🌍</div>
+                    <h1>Disaster Awareness</h1>
+                    <p>Learning Platform</p>
+                </div>
+
+                <h2 className="auth-title">Create Account</h2>
+                <p className="auth-subtitle">Join the platform and start learning</p>
+
+                {error && <div className="alert alert-error">{error}</div>}
+
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="name">Full Name</label>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            placeholder="you@example.com"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <PasswordInput
+                            id="password"
+                            name="password"
+                            value={form.password}
+                            onChange={handleChange}
+                            placeholder="Min. 6 characters"
+                            minLength={6}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="role">Register As</label>
+                        <select
+                            id="role"
+                            name="role"
+                            value={form.role}
+                            onChange={handleChange}
+                        >
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher / Admin</option>
+                        </select>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="btn btn-primary auth-btn"
+                        disabled={loading}
+                    >
+                        {loading ? 'Creating account...' : 'Create Account'}
+                    </button>
+                </form>
+
+                <p className="auth-link">
+                    Already have an account? <Link to="/login">Sign in</Link>
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export default Register;
