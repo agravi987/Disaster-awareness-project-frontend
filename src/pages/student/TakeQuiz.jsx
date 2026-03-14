@@ -58,14 +58,18 @@ function TakeQuiz() {
 
     const handleSubmit = async () => {
         // Check if all questions are answered
-        if (quiz && Object.keys(answers).length < quiz.questions.length) {
+        const answeredCount = Object.keys(answers).length;
+        if (quiz && answeredCount < quiz.questions.length) {
             toast.error('Please answer all questions before submitting');
             return;
         }
 
         setSubmitting(true);
         try {
-            const { data } = await submitQuiz(id, { answers });
+            // Convert answers object to an ordered array of indices for the backend
+            const answersArray = quiz.questions.map((q, i) => answers[i] ?? null);
+            
+            const { data } = await submitQuiz(id, { answers: answersArray });
             setResult({ score: data.score, total: data.total }); // Keep original behavior of showing results
             toast.success('Quiz submitted successfully!');
             // navigate('/student/quizzes'); // Removed navigation to keep original behavior
@@ -148,12 +152,12 @@ function TakeQuiz() {
 
                 <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <p style={{ color: 'rgb(var(--text-muted))' }}>
-                        Answered: {answers.filter(a => a !== null).length} / {quiz?.questions.length}
+                        Answered: {Object.keys(answers).length} / {quiz?.questions.length}
                     </p>
                     <button
                         className="btn btn-primary"
                         onClick={handleSubmit}
-                        disabled={submitting || answers.includes(null)}
+                        disabled={submitting || (quiz && Object.keys(answers).length < quiz.questions.length)}
                     >
                         {submitting ? 'Submitting...' : 'Submit Final Answers'}
                     </button>

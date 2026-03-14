@@ -6,21 +6,28 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getCourseById } from '../../services/api';
+import { getCourseById, getMyProgress, completeCourseStatus } from '../../services/api';
 
 function CourseDetail() {
     const { id } = useParams();
     const [course, setCourse] = useState(null);
+    const [progress, setProgress] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeLesson, setActiveLesson] = useState(null);
 
     useEffect(() => {
-        const fetchCourse = async () => {
+        const fetchData = async () => {
             try {
-                const { data } = await getCourseById(id);
-                setCourse(data);
-                if (data.lessons && data.lessons.length > 0) {
-                    setActiveLesson(data.lessons[0]);
+                const [courseRes, progressRes] = await Promise.all([
+                    getCourseById(id),
+                    getMyProgress()
+                ]);
+                
+                setCourse(courseRes.data);
+                setProgress(progressRes.data);
+                
+                if (courseRes.data.lessons && courseRes.data.lessons.length > 0) {
+                    setActiveLesson(courseRes.data.lessons[0]);
                 }
             } catch (err) {
                 console.error('Failed to load course details');
@@ -28,21 +35,40 @@ function CourseDetail() {
                 setLoading(false);
             }
         };
-        fetchCourse();
+        fetchData();
     }, [id]);
+
+    const handleMarkCompleted = async () => {
+        try {
+            await completeCourseStatus(id);
+            setProgress(prev => ({
+                ...prev,
+                completedCourses: [...(prev?.completedCourses || []), id]
+            }));
+        } catch (err) {
+            console.error('Failed to mark course as completed');
+        }
+    };
 
     if (loading) return <div className="spinner" />;
     if (!course) return <div className="alert alert-error">Course not found.</div>;
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div className="page-header" style={{ marginBottom: '1rem' }}>
+            <div className="page-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                     <span className="badge badge-info">{course.category}</span>
                     <h1 className="page-title" style={{ marginTop: '0.5rem' }}>{course.title}</h1>
                     <p className="subtitle">{course.description}</p>
                 </div>
-                <Link to="/student/learning" className="btn btn-outline">Back to My Learning</Link>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    {progress?.completedCourses?.includes(id) ? (
+                        <span className="badge badge-success" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>✓ Completed</span>
+                    ) : (
+                        <button onClick={handleMarkCompleted} className="btn btn-success">Mark as Completed</button>
+                    )}
+                    <Link to="/student/learning" className="btn btn-outline">Back to My Learning</Link>
+                </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>

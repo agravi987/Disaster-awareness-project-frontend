@@ -7,28 +7,43 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getQuizzes } from '../../services/api';
+import { getQuizzes, getMyProgress, dismissQuiz } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { FiCheckCircle, FiEdit3 } from 'react-icons/fi';
 
 function StudentQuizzes() {
     const { user } = useAuth();
     const [quizzes, setQuizzes] = useState([]);
+    const [progress, setProgress] = useState({ dismissedQuizzes: [] });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchQuizzes = async () => {
+        const fetchData = async () => {
             try {
-                const { data } = await getQuizzes();
-                setQuizzes(data);
+                const [quizzesRes, progressRes] = await Promise.all([
+                    getQuizzes(),
+                    getMyProgress()
+                ]);
+                const visibleQuizzes = quizzesRes.data.filter(q => !progressRes.data.dismissedQuizzes.includes(q._id));
+                setQuizzes(visibleQuizzes);
+                setProgress(progressRes.data);
             } catch (err) {
-                console.error('Failed to fetch quizzes:', err.message);
+                console.error('Failed to fetch data:', err.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchQuizzes();
+        fetchData();
     }, []);
+
+    const handleDismiss = async (quizId) => {
+        try {
+            await dismissQuiz(quizId);
+            setQuizzes(quizzes.filter(q => q._id !== quizId));
+        } catch (err) {
+            alert('Failed to dismiss quiz');
+        }
+    };
 
     if (loading) return <div className="spinner" />;
 
@@ -75,12 +90,17 @@ function StudentQuizzes() {
                                 </div>
 
                                 {mySubmission ? (
-                                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg text-center border border-slate-100 dark:border-slate-700/50">
+                                    <>
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg text-center border border-slate-100 dark:border-slate-700/50 mb-3">
                                         <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1">Your Score</p>
                                         <p className="text-xl font-bold text-green-600 dark:text-green-400">
                                             {mySubmission.score} <span className="text-sm text-slate-400 dark:text-slate-500">/ {totalQ}</span>
                                         </p>
                                     </div>
+                                    <button onClick={() => handleDismiss(quiz._id)} className="btn btn-outline w-full justify-center" style={{ color: 'rgb(var(--text-muted))' }}>
+                                        ✕ Dismiss
+                                    </button>
+                                    </>
                                 ) : (
                                     <Link to={`/student/quizzes/${quiz._id}`} className="btn btn-primary w-full justify-center">
                                         Take Quiz Now

@@ -7,26 +7,45 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getEnrolledCourses, unenrollCourse } from '../../services/api';
+import { getEnrolledCourses, unenrollCourse, getMyProgress, dismissCourse } from '../../services/api';
 import { FiBookOpen, FiUser, FiPlayCircle, FiFileText } from 'react-icons/fi';
 
 function MyLearning() {
     const [courses, setCourses] = useState([]);
+    const [progress, setProgress] = useState({ completedCourses: [], dismissedCourses: [] });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchEnrolled = async () => {
+        const fetchData = async () => {
             try {
-                const { data } = await getEnrolledCourses();
-                setCourses(data);
+                const [enrolledRes, progressRes] = await Promise.all([
+                    getEnrolledCourses(),
+                    getMyProgress()
+                ]);
+                
+                const visibleCourses = enrolledRes.data.filter(
+                    c => !progressRes.data.dismissedCourses.includes(c._id)
+                );
+                
+                setCourses(visibleCourses);
+                setProgress(progressRes.data);
             } catch (err) {
-                console.error('Failed to fetch enrolled courses:', err.message);
+                console.error('Failed to fetch data:', err.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchEnrolled();
+        fetchData();
     }, []);
+
+    const handleDismiss = async (courseId) => {
+        try {
+            await dismissCourse(courseId);
+            setCourses(courses.filter(c => c._id !== courseId));
+        } catch (err) {
+            alert('Failed to dismiss course');
+        }
+    };
 
     const handleUnenroll = async (courseId) => {
         if (!window.confirm("Are you sure you want to unenroll from this course?")) return;
@@ -71,6 +90,9 @@ function MyLearning() {
                                         ) : (
                                             <span className="badge bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Optional</span>
                                         )}
+                                        {progress?.completedCourses?.includes(course._id) && (
+                                            <span className="badge badge-success">✓ Completed</span>
+                                        )}
                                     </div>
                                     <h2 className="text-xl font-bold dark:text-white mb-2">{course.title}</h2>
                                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{course.description}</p>
@@ -82,7 +104,12 @@ function MyLearning() {
                                     <Link to={`/student/courses/${course._id}`} className="btn btn-primary btn-sm">
                                         View Full Course
                                     </Link>
-                                    {course.enrollmentType !== 'mandatory' && (
+                                    {progress?.completedCourses?.includes(course._id) && (
+                                        <button onClick={() => handleDismiss(course._id)} className="btn btn-outline btn-sm" title="Dismiss from view">
+                                            ✕ Dismiss
+                                        </button>
+                                    )}
+                                    {course.enrollmentType !== 'mandatory' && !progress?.completedCourses?.includes(course._id) && (
                                         <button onClick={() => handleUnenroll(course._id)} className="btn btn-outline btn-sm" style={{ borderColor: 'rgb(var(--danger))', color: 'rgb(var(--danger))' }}>
                                             Unenroll
                                         </button>

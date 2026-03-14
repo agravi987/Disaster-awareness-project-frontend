@@ -56,6 +56,13 @@ export const getStudentById = (id) => api.get(`/users/students/${id}`);
 export const createStudent = (data) => api.post('/users/students', data);
 export const updateStudent = (id, data) => api.put(`/users/students/${id}`, data);
 export const deleteStudent = (id) => api.delete(`/users/students/${id}`);
+export const getStudentProgress = (id) => api.get(`/users/students/${id}/progress`);
+
+// ─── Student Progress (Student Only) ─────────────────────────────────────────
+export const getMyProgress = () => api.get('/users/me/progress');
+export const completeCourseStatus = (id) => api.post(`/users/me/complete-course/${id}`);
+export const dismissCourse = (id) => api.post(`/users/me/dismiss-course/${id}`);
+export const dismissQuiz = (id) => api.post(`/users/me/dismiss-quiz/${id}`);
 
 // ─── Groups ───────────────────────────────────────────────────────────────────
 export const getGroups = () => api.get('/groups');
