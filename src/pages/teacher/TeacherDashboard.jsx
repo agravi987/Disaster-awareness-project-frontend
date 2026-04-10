@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getStudents, getCourses, getQuizzes, getGroups } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { FiPlusSquare, FiEdit, FiUsers } from 'react-icons/fi';
+import { FiPlusSquare, FiEdit, FiUsers, FiMap } from 'react-icons/fi';
 
 function TeacherDashboard() {
     const { user } = useAuth();
@@ -90,6 +90,7 @@ function TeacherDashboard() {
                             <Link to="/teacher/courses" className="btn btn-primary"><FiPlusSquare /> Create New Course</Link>
                             <Link to="/teacher/quizzes" className="btn btn-primary"><FiEdit /> Create Quiz</Link>
                             <Link to="/teacher/groups" className="btn btn-outline"><FiUsers /> Form a Group</Link>
+                            <Link to="/teacher/map" className="btn btn-outline"><FiMap /> Review Live Disaster Map</Link>
                         </div>
                     </div>
                 </>

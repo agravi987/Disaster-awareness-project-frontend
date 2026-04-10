@@ -68,6 +68,20 @@
     gap: 1rem;
 }
 
+.videos-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.video-topic-label {
+    font-size: 0.83rem;
+    color: rgb(var(--text-muted));
+    margin-bottom: 0.35rem;
+}
+
 .video-wrapper {
     background: rgb(var(--surface));
     border-radius: var(--radius);
@@ -86,6 +100,35 @@
     font-size: 0.82rem;
     font-weight: 500;
     color: rgb(var(--text));
+}
+
+.video-meta {
+    padding: 0.7rem 0.85rem 0.95rem;
+}
+
+.video-title {
+    margin: 0;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: rgb(var(--text));
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.video-channel {
+    margin-top: 0.3rem;
+    font-size: 0.76rem;
+    color: rgb(var(--text-muted));
+}
+
+.video-meta a {
+    margin-top: 0.45rem;
+    display: inline-block;
+    font-size: 0.78rem;
+    color: rgb(var(--primary));
+    font-weight: 600;
 }
 
 /* ── Courses ────────────────────────────────── */

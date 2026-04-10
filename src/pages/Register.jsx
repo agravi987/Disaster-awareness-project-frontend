@@ -2,8 +2,8 @@
  * src/pages/Register.jsx - Registration Page
  * 
  * Presents a form for new users to register.
- * Users can choose their role (student/teacher).
- * On success, redirects to the appropriate dashboard.
+ * This public registration flow is for students only.
+ * Teacher accounts are managed by admin/backend policy.
  */
 
 import React, { useState } from 'react';
@@ -21,7 +21,6 @@ function Register() {
         name: '',
         email: '',
         password: '',
-        role: 'student', // default role
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -39,11 +38,7 @@ function Register() {
             const { data } = await registerUser(form);
             login(data);
 
-            if (data.role === 'teacher') {
-                navigate('/teacher');
-            } else {
-                navigate('/student');
-            }
+            navigate('/student');
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
@@ -103,19 +98,6 @@ function Register() {
                             minLength={6}
                             required
                         />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="role">Register As</label>
-                        <select
-                            id="role"
-                            name="role"
-                            value={form.role}
-                            onChange={handleChange}
-                        >
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher / Admin</option>
-                        </select>
                     </div>
 
                     <button

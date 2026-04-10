@@ -63,17 +63,19 @@ function Sidebar({ links, role }) {
             </nav>
 
             {/* Footer Actions */}
-            <div style={{ padding: '0 1.5rem', marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="px-6 mt-auto flex flex-col gap-2 pb-6">
                 <button 
-                    className="sidebar-logout" 
+                    className="flex items-center gap-3 px-4 py-2 w-full rounded-md text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 text-[rgb(var(--text-muted))]" 
                     onClick={toggleTheme}
-                    style={{ background: 'transparent', color: 'rgb(var(--text-muted))' }}
                     title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
                 >
-                    {theme === 'light' ? <><FiMoon /> Dark Mode</> : <><FiSun /> Light Mode</>}
+                    {theme === 'light' ? <><FiMoon size={18} /> Dark Mode</> : <><FiSun size={18} /> Light Mode</>}
                 </button>
-                <button className="sidebar-logout" onClick={handleLogout}>
-                    <FiLogOut /> Logout
+                <button 
+                    className="flex items-center gap-3 px-4 py-2 w-full rounded-md text-sm font-medium transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 text-[rgb(var(--text))]" 
+                    onClick={handleLogout}
+                >
+                    <FiLogOut size={18} /> Logout
                 </button>
             </div>
         </aside>

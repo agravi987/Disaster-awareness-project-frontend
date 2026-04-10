@@ -14,8 +14,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
-// Auth pages (public)
+// Public facing pages
+import Home from './pages/Home';
 import Login from './pages/Login';
+import StudentLogin from './pages/StudentLogin';
+import TeacherLogin from './pages/TeacherLogin';
 import Register from './pages/Register';
 
 // Student pages
@@ -34,6 +37,7 @@ import ManageGroups from './pages/teacher/ManageGroups';
 import ManageCourses from './pages/teacher/ManageCourses';
 import ManageQuizzes from './pages/teacher/ManageQuizzes';
 import CourseEditor from './pages/teacher/CourseEditor';
+import LiveDisasterMap from './pages/shared/LiveDisasterMap';
 
 // ─── Route Guards ─────────────────────────────────────────────────────────────
 
@@ -76,10 +80,23 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                {/* Landing page */}
+                <Route path="/" element={<Home />} />
+                
                 {/* Public routes */}
                 <Route path="/login" element={
                     <PublicRoute>
                         <Login />
+                    </PublicRoute>
+                } />
+                <Route path="/login/student" element={
+                    <PublicRoute>
+                        <StudentLogin />
+                    </PublicRoute>
+                } />
+                <Route path="/login/teacher" element={
+                    <PublicRoute>
+                        <TeacherLogin />
                     </PublicRoute>
                 } />
                 <Route path="/register" element={
@@ -87,9 +104,6 @@ function App() {
                         <Register />
                     </PublicRoute>
                 } />
-
-                {/* Redirect root to appropriate dashboard if logged in, else login */}
-                <Route path="/" element={<Navigate to={user ? defaultDashboard : "/login"} replace />} />
 
                 {/* ── Student Routes (protected + role=student) ── */}
                 <Route
@@ -107,6 +121,7 @@ function App() {
                     <Route path="quizzes" element={<StudentQuizzes />} />
                     <Route path="quizzes/:id" element={<TakeQuiz />} />
                     <Route path="courses/:id" element={<CourseDetail />} />
+                    <Route path="map" element={<LiveDisasterMap />} />
                 </Route>
 
                 {/* ── Teacher Routes (protected + role=teacher) ── */}
@@ -126,6 +141,7 @@ function App() {
                     <Route path="courses" element={<ManageCourses />} />
                     <Route path="courses/:id/edit" element={<CourseEditor />} />
                     <Route path="quizzes" element={<ManageQuizzes />} />
+                    <Route path="map" element={<LiveDisasterMap />} />
                 </Route>
 
                 {/* Catch-all fallback */}

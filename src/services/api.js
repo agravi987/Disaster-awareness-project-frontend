@@ -101,6 +101,12 @@ export const uploadImage = (formData) =>
     api.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
 // ─── News ──────────────────────────────────────────────────────────────────────
-export const getDisasterNews = () => api.get('/news');
+export const getDisasterNews = (params = {}) => api.get('/news', { params });
+
+// --- Disaster Intelligence ---
+export const geocodeDisasterLocation = (location) =>
+    api.get('/disaster/geocode', { params: { location } });
+export const getDisasterOverview = (params = {}) => api.get('/disaster/overview', { params });
+export const getDisasterWeather = (params = {}) => api.get('/disaster/weather', { params });
 
 export default api;

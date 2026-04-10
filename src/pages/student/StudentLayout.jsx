@@ -10,11 +10,12 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 
-import { FiHome, FiBookOpen, FiEdit3 } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiEdit3, FiMap } from 'react-icons/fi';
 
 // Navigation links for the student sidebar
 const STUDENT_LINKS = [
     { label: 'Home', to: '/student', icon: <FiHome />, exact: true },
+    { label: 'Live Map', to: '/student/map', icon: <FiMap /> },
     { label: 'My Learning', to: '/student/learning', icon: <FiBookOpen /> },
     { label: 'Assigned Quizzes', to: '/student/quizzes', icon: <FiEdit3 /> },
 ];
