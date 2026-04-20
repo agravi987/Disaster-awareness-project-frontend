@@ -1,6 +1,6 @@
 /**
  * src/pages/Register.jsx - Registration Page
- * 
+ *
  * Presents a form for new users to register.
  * This public registration flow is for students only.
  * Teacher accounts are managed by admin/backend policy.
@@ -25,19 +25,18 @@ function Register() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (event) => {
+        setForm({ ...form, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         setError('');
         setLoading(true);
 
         try {
             const { data } = await registerUser(form);
             login(data);
-
             navigate('/student');
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -50,7 +49,7 @@ function Register() {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="auth-header">
-                    <div className="auth-logo">🌍</div>
+                    <div className="auth-logo">Student Access</div>
                     <h1>Disaster Awareness</h1>
                     <p>Learning Platform</p>
                 </div>

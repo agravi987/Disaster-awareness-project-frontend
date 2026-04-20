@@ -14,7 +14,7 @@ function PasswordInput({ className = '', style = {}, ...props }) {
     const [show, setShow] = useState(false);
 
     return (
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <div className="password-input-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <input
                 {...props}
                 type={show ? 'text' : 'password'}
@@ -26,6 +26,7 @@ function PasswordInput({ className = '', style = {}, ...props }) {
                 onClick={() => setShow((s) => !s)}
                 aria-label={show ? 'Hide password' : 'Show password'}
                 title={show ? 'Hide password' : 'Show password'}
+                className="password-toggle-btn"
                 style={{
                     position: 'absolute',
                     right: '0.75rem',
@@ -38,7 +39,6 @@ function PasswordInput({ className = '', style = {}, ...props }) {
                     color: 'rgb(var(--text-muted))',
                     transition: 'color 0.15s',
                 }}
-                tabIndex={-1}
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'rgb(var(--text))')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'rgb(var(--text-muted))')}
             >

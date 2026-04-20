@@ -9,6 +9,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
+import DashboardTopbar from '../../components/DashboardTopbar';
 
 import { FiHome, FiBookOpen, FiEdit3, FiMap } from 'react-icons/fi';
 
@@ -25,6 +26,7 @@ function StudentLayout() {
         <div className="dashboard-layout">
             <Sidebar links={STUDENT_LINKS} role="student" />
             <main className="main-content">
+                <DashboardTopbar role="student" />
                 {/* The active child route renders here */}
                 <Outlet />
             </main>

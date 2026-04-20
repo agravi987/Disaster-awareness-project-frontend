@@ -1,0 +1,201 @@
+.dashboard-topbar {
+    position: sticky;
+    top: 0.9rem;
+    z-index: 60;
+    border: 1px solid rgba(var(--border), 0.92);
+    border-radius: 16px;
+    padding: 0.95rem 1rem;
+    margin-bottom: 1.1rem;
+    backdrop-filter: blur(10px);
+    background:
+        linear-gradient(120deg, rgba(var(--surface-elevated), 0.98) 0%, rgba(var(--surface-soft), 0.95) 100%);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.1);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+}
+
+.dashboard-topbar-student {
+    border-color: rgba(var(--primary), 0.24);
+}
+
+.dashboard-topbar-teacher {
+    border-color: rgba(var(--info), 0.24);
+}
+
+.dashboard-topbar-main {
+    min-width: 0;
+}
+
+.dashboard-topbar-kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--text-muted));
+}
+
+.dashboard-topbar-title {
+    margin: 0.2rem 0 0;
+    font-size: clamp(1.15rem, 2.1vw, 1.55rem);
+    font-weight: 800;
+    color: rgb(var(--text));
+}
+
+.dashboard-topbar-meta {
+    margin: 0.5rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.79rem;
+    color: rgb(var(--text-muted));
+}
+
+.dashboard-topbar-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+}
+
+.dashboard-topbar-side {
+    display: grid;
+    gap: 0.62rem;
+    align-content: start;
+}
+
+.dashboard-topbar-links {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.42rem;
+}
+
+.dashboard-chip-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.34rem;
+    padding: 0.38rem 0.64rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border: 1px solid rgba(var(--border), 0.95);
+    background: rgba(var(--surface), 0.78);
+    color: rgb(var(--text));
+    transition: all 0.18s ease;
+}
+
+.dashboard-chip-link:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--primary), 0.45);
+    background: rgba(var(--primary), 0.1);
+    color: rgb(var(--primary-dark));
+}
+
+.dashboard-chip-link:focus-visible,
+.dashboard-tip-refresh:focus-visible {
+    outline: none;
+    border-color: rgba(var(--primary), 0.65);
+    box-shadow: 0 0 0 3px rgba(var(--primary), 0.16);
+}
+
+.dashboard-tip-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    border-radius: 11px;
+    border: 1px solid rgba(var(--primary), 0.24);
+    background: linear-gradient(120deg, rgba(var(--primary), 0.17), rgba(var(--info), 0.14));
+    padding: 0.5rem 0.6rem;
+    max-width: 440px;
+}
+
+.dashboard-tip-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.38rem;
+    min-width: 0;
+}
+
+.dashboard-tip-main p {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: rgb(var(--text));
+}
+
+.dashboard-tip-icon {
+    flex-shrink: 0;
+    color: rgb(var(--primary-dark));
+    margin-top: 0.02rem;
+}
+
+.dashboard-tip-refresh {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(var(--primary), 0.28);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--surface-elevated), 0.9);
+    color: rgb(var(--primary-dark));
+    transition: all 0.18s ease;
+}
+
+.dashboard-tip-refresh:hover {
+    transform: rotate(-12deg);
+    background: rgb(var(--surface-elevated));
+}
+
+.dashboard-topbar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.dashboard-shortcut-hint {
+    font-size: 0.68rem;
+    color: rgb(var(--text-muted));
+    border: 1px dashed rgba(var(--border), 0.95);
+    padding: 0.26rem 0.42rem;
+    border-radius: 999px;
+    background: rgba(var(--surface), 0.72);
+}
+
+@media (max-width: 1024px) {
+    .dashboard-topbar {
+        position: static;
+    }
+}
+
+@media (max-width: 920px) {
+    .dashboard-topbar {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-topbar-links {
+        justify-content: flex-start;
+    }
+
+    .dashboard-topbar-controls {
+        justify-content: flex-start;
+    }
+
+    .dashboard-tip-card {
+        max-width: none;
+    }
+}
+
+@media (max-width: 540px) {
+    .dashboard-shortcut-hint {
+        display: none;
+    }
+
+    .dashboard-topbar {
+        padding: 0.78rem;
+    }
+}

@@ -5,6 +5,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
+import DashboardTopbar from '../../components/DashboardTopbar';
 
 import { FiPieChart, FiUsers, FiUserPlus, FiBook, FiClipboard, FiMap } from 'react-icons/fi';
 
@@ -24,6 +25,7 @@ function TeacherLayout() {
             {/* role="teacher" gives the sidebar a blue accent color */}
             <Sidebar links={TEACHER_LINKS} role="teacher" />
             <main className="main-content">
+                <DashboardTopbar role="teacher" />
                 <Outlet />
             </main>
         </div>

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     getDisasterNews,
     getCourses,
     enrollCourse,
     getEnrolledCourses,
+    getMyNotifications,
+    markNotificationRead,
+    markAllNotificationsRead,
 } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toast';
@@ -17,6 +20,11 @@ import {
     FiUser,
     FiAlertTriangle,
     FiRefreshCw,
+    FiBell,
+    FiCheckCircle,
+    FiClock,
+    FiExternalLink,
+    FiActivity,
 } from 'react-icons/fi';
 import './StudentHome.css';
 
@@ -29,19 +37,80 @@ function StudentHome() {
     const [newsMessage, setNewsMessage] = useState('');
     const [courses, setCourses] = useState([]);
     const [videos, setVideos] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
 
     const [loadingNews, setLoadingNews] = useState(true);
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingVideos, setLoadingVideos] = useState(true);
+    const [loadingNotifications, setLoadingNotifications] = useState(true);
 
     const [enrolling, setEnrolling] = useState(null);
     const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
+    const [markingNotificationId, setMarkingNotificationId] = useState(null);
+    const [markingAllNotifications, setMarkingAllNotifications] = useState(false);
+    const [notificationLiveStatus, setNotificationLiveStatus] = useState('connecting');
+    const previousUnreadRef = useRef(0);
 
     useEffect(() => {
         fetchNews();
         fetchCourses();
         fetchEnrolled();
         fetchVideos();
+        fetchNotifications();
+
+        const pollTimer = setInterval(() => {
+            fetchNotifications({ silent: true });
+        }, 60000);
+
+        return () => clearInterval(pollTimer);
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setNotificationLiveStatus('offline');
+            return;
+        }
+
+        const base = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+        const streamUrl = `${base}/notifications/stream?token=${encodeURIComponent(token)}`;
+        let source = null;
+        let reconnectTimer = null;
+
+        const connect = () => {
+            setNotificationLiveStatus('connecting');
+            source = new EventSource(streamUrl);
+
+            source.onopen = () => {
+                setNotificationLiveStatus('live');
+            };
+
+            source.onmessage = (event) => {
+                try {
+                    const payload = JSON.parse(event.data || '{}');
+                    if (payload.type === 'notification:new') {
+                        fetchNotifications({ silent: true });
+                        toast.info(payload.notification?.title || 'New notification update');
+                    }
+                } catch {
+                    // ignore malformed stream payloads
+                }
+            };
+
+            source.onerror = () => {
+                setNotificationLiveStatus('reconnecting');
+                source?.close();
+                reconnectTimer = setTimeout(connect, 4000);
+            };
+        };
+
+        connect();
+
+        return () => {
+            if (reconnectTimer) clearTimeout(reconnectTimer);
+            source?.close();
+        };
     }, []);
 
     const fetchNews = async () => {
@@ -89,6 +158,61 @@ function StudentHome() {
         }
     };
 
+    const fetchNotifications = async ({ silent = false } = {}) => {
+        if (!silent) setLoadingNotifications(true);
+        try {
+            const { data } = await getMyNotifications({ limit: 8 });
+            const incoming = data.notifications || [];
+            const incomingUnread = data.unreadCount || 0;
+            setNotifications(incoming);
+            setUnreadNotifications(incomingUnread);
+
+            if (silent && previousUnreadRef.current > 0 && incomingUnread > previousUnreadRef.current) {
+                toast.info(`You have ${incomingUnread} unread notification updates.`);
+            }
+            previousUnreadRef.current = incomingUnread;
+        } catch (err) {
+            console.error('Failed to fetch notifications:', err.message);
+        } finally {
+            if (!silent) setLoadingNotifications(false);
+        }
+    };
+
+    const handleMarkNotificationRead = async (notificationId) => {
+        if (!notificationId) return;
+        setMarkingNotificationId(notificationId);
+        try {
+            const { data } = await markNotificationRead(notificationId);
+            const updatedUnread = typeof data.unreadCount === 'number' ? data.unreadCount : 0;
+            setUnreadNotifications(updatedUnread);
+            previousUnreadRef.current = updatedUnread;
+            setNotifications((prev) =>
+                prev.map((item) =>
+                    item._id === notificationId ? { ...item, isRead: true } : item
+                )
+            );
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to mark notification as read.');
+        } finally {
+            setMarkingNotificationId(null);
+        }
+    };
+
+    const handleMarkAllNotificationsRead = async () => {
+        setMarkingAllNotifications(true);
+        try {
+            await markAllNotificationsRead();
+            setUnreadNotifications(0);
+            previousUnreadRef.current = 0;
+            setNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
+            toast.success('All notifications marked as read.');
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to mark all notifications as read.');
+        } finally {
+            setMarkingAllNotifications(false);
+        }
+    };
+
     const handleVideoRefresh = async () => {
         await fetchVideos();
     };
@@ -114,14 +238,87 @@ function StudentHome() {
         </div>
     );
 
+    const formatNotificationTime = (value) => {
+        if (!value) return 'Just now';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return 'Just now';
+        return date.toLocaleString();
+    };
+
+    const dashboardStats = [
+        {
+            label: 'Unread notifications',
+            value: unreadNotifications,
+            note: notificationLiveStatus === 'live' ? 'Live updates connected' : 'Polling fallback active',
+            icon: <FiBell />,
+        },
+        {
+            label: 'My enrolled courses',
+            value: enrolledCourseIds.length,
+            note: 'Continue learning from your dashboard',
+            icon: <FiBookOpen />,
+        },
+        {
+            label: 'Available courses',
+            value: courses.length,
+            note: 'Choose a topic and enroll quickly',
+            icon: <FiMap />,
+        },
+        {
+            label: 'Live news items',
+            value: news.length,
+            note: news[0]?.source?.name ? `Latest from ${news[0].source.name}` : 'Real-world updates when available',
+            icon: <FiAlertTriangle />,
+        },
+    ];
+
+    const renderNotificationSkeleton = () => (
+        <div className="notification-list">
+            {Array.from({ length: 4 }).map((_, index) => (
+                <div key={`notification-skeleton-${index}`} className="notification-skeleton" />
+            ))}
+        </div>
+    );
+
     return (
-        <div className="student-home">
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title text-3xl font-bold flex items-center gap-2">Welcome, {user?.name}!</h1>
-                    <p className="subtitle text-slate-500 mt-1 dark:text-slate-400">Stay informed. Stay prepared. Stay safe.</p>
+        <div className="student-home smooth-reveal">
+            <section className="dashboard-hero section-shell">
+                <div className="dashboard-hero-main">
+                    <div className="page-header">
+                        <div>
+                            <h1 className="page-title text-3xl font-bold flex items-center gap-2">Welcome, {user?.name}!</h1>
+                            <p className="subtitle text-slate-500 mt-1 dark:text-slate-400">
+                                Learn what to do, watch live risks near you, and stay ready for updates.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-stat-grid">
+                        {dashboardStats.map((item) => (
+                            <article key={item.label} className="dashboard-stat-card">
+                                <div className="dashboard-stat-head">
+                                    <span>{item.label}</span>
+                                    <i>{item.icon}</i>
+                                </div>
+                                <strong>{item.value}</strong>
+                                <p>{item.note}</p>
+                            </article>
+                        ))}
+                    </div>
                 </div>
-            </div>
+
+                <aside className="dashboard-hero-side">
+                    <p className="dashboard-side-label">Recommended next step</p>
+                    <h2>Open the live disaster map before starting your day.</h2>
+                    <p>
+                        The map now combines actual incident feeds, weather risk signals, and related news so you can
+                        understand what is happening around a chosen location.
+                    </p>
+                    <Link to="/student/map" className="btn btn-primary">
+                        Open Live Map <FiAlertTriangle />
+                    </Link>
+                </aside>
+            </section>
 
             <div className="quick-actions grid-2">
                 <Link to="/student/learning" className="quick-card bg-white dark:bg-slate-800 border dark:border-slate-700 p-6 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex items-center gap-4 group">
@@ -147,7 +344,95 @@ function StudentHome() {
                 </Link>
             </div>
 
-            <section className="section my-10">
+            <section className="section section-shell my-10 smooth-reveal">
+                <div className="notification-header">
+                    <h2 className="section-title text-xl font-bold flex items-center gap-2 dark:text-white">
+                        <FiBell className="text-primary" /> Recent Notifications
+                    </h2>
+                    <div className="notification-header-actions">
+                        <span className={`notification-unread-pill ${unreadNotifications > 0 ? 'unread' : ''}`}>
+                            {unreadNotifications} unread
+                        </span>
+                        <span className={`notification-live-pill ${notificationLiveStatus}`}>
+                            <FiActivity />
+                            {notificationLiveStatus === 'live'
+                                ? 'Live'
+                                : notificationLiveStatus === 'reconnecting'
+                                  ? 'Reconnecting'
+                                  : notificationLiveStatus === 'offline'
+                                    ? 'Offline'
+                                    : 'Connecting'}
+                        </span>
+                        <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                            onClick={() => fetchNotifications()}
+                            disabled={loadingNotifications}
+                        >
+                            <FiRefreshCw /> Refresh
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                            onClick={handleMarkAllNotificationsRead}
+                            disabled={markingAllNotifications || unreadNotifications === 0}
+                        >
+                            <FiCheckCircle /> {markingAllNotifications ? 'Marking...' : 'Mark all read'}
+                        </button>
+                    </div>
+                </div>
+
+                <p className="notification-subtitle text-sm text-slate-500 dark:text-slate-400 mb-4">
+                    Real-time push is enabled with a 60-second polling fallback.
+                </p>
+
+                {loadingNotifications ? (
+                    renderNotificationSkeleton()
+                ) : notifications.length === 0 ? (
+                    <div className="notification-empty">
+                        <FiBell />
+                        <p>No notification updates yet. New teacher actions will appear here.</p>
+                    </div>
+                ) : (
+                    <div className="notification-list">
+                        {notifications.map((notification) => (
+                            <article
+                                key={notification._id}
+                                className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+                            >
+                                <div className="notification-main">
+                                    <h3>{notification.title}</h3>
+                                    <p>{notification.message}</p>
+                                    <div className="notification-meta">
+                                        <span><FiClock /> {formatNotificationTime(notification.createdAt)}</span>
+                                        {notification.actor?.name ? <span>By {notification.actor.name}</span> : null}
+                                        {!notification.isRead ? <span className="notification-dot">New</span> : null}
+                                    </div>
+                                </div>
+                                <div className="notification-actions">
+                                    {notification.meta?.route ? (
+                                        <Link className="btn btn-outline btn-sm" to={notification.meta.route}>
+                                            Open <FiExternalLink />
+                                        </Link>
+                                    ) : null}
+                                    {!notification.isRead ? (
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => handleMarkNotificationRead(notification._id)}
+                                            disabled={markingNotificationId === notification._id}
+                                        >
+                                            {markingNotificationId === notification._id ? 'Saving...' : 'Mark read'}
+                                        </button>
+                                    ) : null}
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            <section className="section section-shell my-10 smooth-reveal">
                 <div className="videos-header-row flex items-center justify-between mb-4">
                     <h2 className="section-title text-xl font-bold flex items-center gap-2 dark:text-white">
                         <FiVideo className="text-primary" /> Awareness Videos
@@ -186,7 +471,7 @@ function StudentHome() {
                 )}
             </section>
 
-            <section className="section my-10">
+            <section className="section section-shell my-10 smooth-reveal">
                 <h2 className="section-title text-xl font-bold mb-4 flex items-center gap-2 dark:text-white"><FiMap className="text-primary" /> Available Courses</h2>
                 {loadingCourses ? (
                     renderSkeletonGrid(3, 'h-[250px]')
@@ -226,7 +511,7 @@ function StudentHome() {
                 )}
             </section>
 
-            <section className="section my-10">
+            <section className="section section-shell my-10 smooth-reveal">
                 <h2 className="section-title text-xl font-bold mb-4 dark:text-white">Latest Disaster News</h2>
                 {loadingNews ? (
                     renderSkeletonGrid(3, 'h-[320px]')
@@ -266,7 +551,7 @@ function StudentHome() {
             </section>
 
             {extraResources.length > 0 && (
-                <section className="section my-10">
+                <section className="section section-shell my-10 smooth-reveal">
                     <h2 className="section-title text-xl font-bold mb-4 dark:text-white">Extra News Resources</h2>
                     <div className="news-grid grid-3">
                         {extraResources.map((article, idx) => (

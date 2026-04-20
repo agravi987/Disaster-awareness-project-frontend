@@ -106,7 +106,15 @@ export const getDisasterNews = (params = {}) => api.get('/news', { params });
 // --- Disaster Intelligence ---
 export const geocodeDisasterLocation = (location) =>
     api.get('/disaster/geocode', { params: { location } });
+export const reverseGeocodeDisasterLocation = (params = {}) =>
+    api.get('/disaster/reverse-geocode', { params });
 export const getDisasterOverview = (params = {}) => api.get('/disaster/overview', { params });
 export const getDisasterWeather = (params = {}) => api.get('/disaster/weather', { params });
+
+// --- Notifications ---
+export const getMyNotifications = (params = {}) => api.get('/notifications', { params });
+export const markNotificationRead = (id) => api.patch(`/notifications/${id}/read`);
+export const markAllNotificationsRead = () => api.patch('/notifications/read-all');
+export const getMyNotificationActivity = (params = {}) => api.get('/notifications/activity', { params });
 
 export default api;
